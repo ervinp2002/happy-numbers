@@ -64,7 +64,7 @@ public class Main {
     }
 
     public static void main(String args[]) {
-        // PRE: Keyboard input will be taken to determine upper and lower bounds of happy numbers range.
+        // PRE: Keyboard input will be taken to determine upper and lower bounds of range.
         // POST: Top 10 happy numbers with the greatest norms will be outputted in descending order. 
 
         // TreeMap allows for traversal and insertion in O(log n). 
