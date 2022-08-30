@@ -11,25 +11,40 @@ def getArguments(argsList):
     # PRE: Upper and lower bound variables are passed as arguments. 
     # POST: Keyboard input is recorded as the upper and lower bounds. 
 
-    print("First Argument: ", end = "")
-    argsList[0] = int(input())
+    # Exception handling added to take unwanted input into account. 
+    while True:
+        try:
+            print("First Argument: ", end = "")
+            argsList[0] = int(input())
+            
+            while argsList[0] < 0 or argsList[0] == None:
+                print("First Argument: ", end = "")
+                argsList[0] = int(input())
+
+            break
+
+        except ValueError:
+            print("Invalid input.")
+            
+    while True:
+        try:
+            print("Second Argument: ", end = "")
+            argsList[1] = int(input())
+
+            while argsList[1] < 0 or argsList[1] == None or argsList[1] == argsList[0]:
+                print("Second Argument: ", end = "")
+                argsList[1] = int(input())
+
+            if argsList[0] > argsList[1]: 
+                temp = argsList[0]
+                argsList[0] = argsList[1]
+                argsList[1] = temp
+
+            break
+
+        except ValueError:
+            print("Invalid input.")
     
-    while argsList[0] < 0 or argsList[0] == None:
-        print("First Argument: ", end = "")
-        argsList[0] = int(input())
-    
-    print("Second Argument: ", end = "")
-    argsList[1] = int(input())
-
-    while argsList[1] < 0 or argsList[1] == None or argsList[1] == argsList[0]:
-        print("Second Argument: ", end = "")
-        argsList[1] = int(input())
-
-    if argsList[0] > argsList[1]: 
-        temp = argsList[0]
-        argsList[0] = argsList[1]
-        argsList[1] = temp
-
 # Function pulled from Rosetta Code. 
 def happy(n):
     # PRE: Integer is passed in as a argument.  
@@ -68,7 +83,7 @@ def happyPrint(normsList, dictionary):
     size = 10 if len(normsList) >= 10 else len(normsList)
     if size == 0: 
         print("NOBODY'S HAPPY :(")
-    else:
+    else: 
         for x in range(size): print(dictionary.get(normsList[x])) 
 
 def main():
