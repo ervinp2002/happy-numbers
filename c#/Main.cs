@@ -11,10 +11,12 @@ using System.Linq;
 
 class HappyNumbers {
 
+    /* Struct helps to consolidate happy number attributes
+       instead of using parallel arrays. */
     public struct HappyNumber {
     
-        public long value;
-        public double norm;
+        public long value {get;}
+        public double norm {get;}
         
         public HappyNumber(long number) {
             value = number;
@@ -22,8 +24,8 @@ class HappyNumbers {
         }
     }
 
-    public static void swap<T>(ref T arg1, ref T arg2) {
-        // PRE: Arguments passed in have been initialized. 
+    public static void Swap<T>(ref T arg1, ref T arg2) {
+        // PRE: Arguments passed in were initialized. 
         // POST: Swaps the addresses of the argument. 
 
         T temp = arg1;
@@ -32,7 +34,10 @@ class HappyNumbers {
     }
 
     // Function pulled from Rosetta Code. 
-    public static bool ishappy(long n) {
+    public static bool IsHappy(long n) {
+        // PRE: Long integer has been passed in.
+        // POST: Returns a boolean to determine if the long is happy.
+
         List<long> cache = new List<long>();
         long sum = 0;
 
@@ -55,7 +60,10 @@ class HappyNumbers {
        return true;       
     }
 
-    static void Main() {
+    public static void Main() {
+        // POST: Outputs the happy numbers with the highest norms.
+
+        List<HappyNumber> happy = new List<HappyNumber>();
 
         Console.Write("First Argument: ");
         string arg1 = Console.ReadLine();
@@ -66,11 +74,14 @@ class HappyNumbers {
         long upper = long.Parse(arg2);
 
         if (lower > upper) {
-            swap(ref lower, ref upper);
+            Swap(ref lower, ref upper);
         }
 
-        
-
+        for (long i = lower; i <= upper; i++) {
+            if (IsHappy(i)) {
+                happy.Add(new HappyNumber(i));
+            }
+        }
     }
         
 }
