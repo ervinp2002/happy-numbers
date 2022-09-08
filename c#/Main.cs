@@ -5,11 +5,11 @@ Project 1: Base 10 Happy Numbers Norm
 Main Program in C#
 */
 
-using System.Math;
-using System.Collections;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
-class Main {
+class HappyNumbers {
 
     public struct HappyNumber {
     
@@ -22,11 +22,11 @@ class Main {
         }
     }
 
-    public static void swap(ref object arg1, ref object arg2) {
-        // PRE:
-        // POST:
+    public static void swap<T>(ref T arg1, ref T arg2) {
+        // PRE: Arguments passed in have been initialized. 
+        // POST: Swaps the addresses of the argument. 
 
-        object temp = arg1;
+        T temp = arg1;
         arg1 = arg2;
         arg2 = temp;
     }
@@ -43,7 +43,7 @@ class Main {
 
             cache.Add(n);
             while (n != 0) {
-                int digit = n % 10;
+                long digit = n % 10;
                 sum += digit * digit;
                 n /= 10;
             }
@@ -58,19 +58,18 @@ class Main {
     static void Main() {
 
         Console.Write("First Argument: ");
-        String arg1 = Console.ReadLine();
-        long lower = long.parse(arg1);
+        string arg1 = Console.ReadLine();
+        long lower = long.Parse(arg1);
 
         Console.Write("Second Argument: ");
-        String arg2 = Console.ReadLine();
-        long upper = long.parse(arg2);
+        string arg2 = Console.ReadLine();
+        long upper = long.Parse(arg2);
 
         if (lower > upper) {
-            swap(lower, upper);
+            swap(ref lower, ref upper);
         }
 
         
-
 
     }
         
