@@ -9,20 +9,18 @@ Driver Program in C
 #include <stdlib.h>
 #include <math.h>
 
-// Following 3 lines were pulled from Rosetta Code. 
-#define CACHE 256
-enum { h_unknown = 0, h_yes, h_no };
-unsigned char buf[CACHE] = {0, h_yes, 0};
-
 typedef struct {
     long value;
     double norm;
 } HappyNumber;
 
+int dsum(int n);
 int happy(int n);
+
 void swap(long *arg1, long *arg2);
 void arraySwap(HappyNumber *value1, HappyNumber *value2);
 void getArguments(long *lower, long *upper);
+
 void quicksort(HappyNumber arr[], int first, int last);
 void pincer(HappyNumber arr[], int first, int last, int *split);
 
@@ -104,22 +102,27 @@ void getArguments(long *lower, long *upper) {
     }
 }
 
-// Function pulled from Rosetta Code. 
+// Following 2 functions pulled from Rosetta Code.
+int dsum(int n) {
+    // PRE: Integer is passed as an argument. 
+    // POST: Returns the sum of the square of each digit. 
+
+    int sum, x;
+    for (sum = 0; n; n /= 10) x = n % 10, sum += x * x;
+	return sum;
+}
+
+// Pulled from Rosetta Code. 
 int happy(int n) {
-    // PRE:
-    // POST: 
+    // PRE: Integer is passed as an argument. 
+    // POST: Returns a 1 if argument is happy, otherwise 0.
 
-	int sum = 0, x, nn;
-	if (n < CACHE) {
-		if (buf[n]) return 2 - buf[n];
-		buf[n] = h_no;
-	}
-
-	for (nn = n; nn; nn /= 10) x = nn % 10, sum += x * x;
-	x = happy(sum);
-	if (n < CACHE) buf[n] = 2 - x;
-
-	return x;
+    int nn;
+	while (n > 999) n = dsum(n);    // 4 digit numbers can't cycle. 
+	nn = dsum(n);
+	while (nn != n && nn != 1) 
+        n = dsum(n), nn = dsum(dsum(nn));    // Cycle detection. 
+	return n == 1;
 }
 
 int main() {
@@ -133,9 +136,9 @@ int main() {
     getArguments(&lower, &upper);
     if (lower > upper) swap(&lower, &upper);
 
+    int result = happy(10);
+    printf("%d\n", result);
     
 
     return 0;
 }
-
-  
