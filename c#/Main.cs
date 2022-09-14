@@ -11,55 +11,6 @@ using System.Linq;
 
 public class HappyNumbers {
 
-    /* Struct helps to consolidate happy number attributes
-       instead of using parallel arrays. */
-    public struct HappyNumber {
-    
-        public long value {get;}
-        public double norm {get; set;}
-        
-        public HappyNumber(long number) {
-            value = number;
-            norm = 0;
-        }
-
-        // Operator overloading will help with sorting. 
-        public static bool operator < (HappyNumber arg1, HappyNumber arg2) {
-            return arg1.norm < arg2.norm;
-        }
-
-        public static bool operator > (HappyNumber arg1, HappyNumber arg2) {
-            return arg1.norm > arg2.norm;
-        }
-
-        public static bool operator <= (HappyNumber arg1, HappyNumber arg2) {
-            return arg1.norm <= arg2.norm;
-        }
-
-        public static bool operator >= (HappyNumber arg1, HappyNumber arg2) {
-            return arg1.norm >= arg2.norm;
-        }
-    }
-
-    public static void Swap<T>(ref T arg1, ref T arg2) {
-        // PRE: Arguments passed in were initialized. 
-        // POST: Swaps the addresses of the argument. 
-
-        T temp = arg1;
-        arg1 = arg2;
-        arg2 = temp;
-    }
-
-    // Overloaded swap for attributes that are already passed by reference. 
-    public static void Swap<T>(T arg1, T arg2) {
-        // PRE: Arguments passed in were initialized. 
-        // POST: Swaps the addresses of the arguments. 
-
-        T temp = arg1;
-        arg1 = arg2;
-        arg2 = temp; 
-    }
-
     // Function pulled from Rosetta Code. 
     public static bool IsHappy(long n) {
         // PRE: Long integer has been passed in.
@@ -87,69 +38,40 @@ public class HappyNumbers {
        return true;       
     }
 
-    public static double CalculateNorm(ref HappyNumber number) {
-        // PRE: Struct has been instantiated with a value passed into it. 
+    public static double CalculateNorm(long number) {
+        // PRE: Argument passed in is a happy number. 
         // POST: Returns the norm of the happy number. 
 
-        long sum = 0;                       // Calculates sum of current number. 
-        long total = 0;                     // Keeps track of overall sum. 
-        long temp = number.value;           // Keeps track of current number in sequence. 
+        // Reusing code from my Java implementation. 
+        List<long> sequence = new List<long>();
+        long m = 0;
+        int digit = 0;
 
-        while (temp != 1) {
-            while (temp != 0) {
-                long digit = temp % 10;
-                sum += digit * digit;
-                temp /= 10;
+        sequence.Add(number);
+        while (number != 1) {
+            m = 0;
+            while (number > 0) {
+                digit = (int)(number % 10);
+                m += digit * digit;
+                number /= 10;
             }
 
-            temp = sum;
-            total += sum;
-            sum = 0;
+            number = m;
+            sequence.Add(number);
         }
 
-        return Math.Sqrt(total + 1);
-    }
-
-    public static void Pincer(List<HappyNumber> list, int first, int last, out int split) {
-        // PRE: To be used with a QuickSort. 
-        // POST: Moves all values less than pivot to the left side and larger values to the right side.
-
-        int pivot = first;
-        int saveFirst = first;
-        first++;
-
-        while (first <= last) {
-            while ((list[first] <= list[pivot]) && (first <= last)) first++;
-            while ((list[last] >= list[pivot]) && (first <= last)) last--;
-
-            if (first < last) {
-                Swap(list[first], list[last]);
-                first++;	
-                last--;
-            }
+        double total = 0;
+        foreach (long element in sequence) {
+            total += Math.Pow(element, 2);
         }
 
-        split = last;
-        Swap(list[saveFirst], list[split]);
-    }
-
-    public static void QuickSort(List<HappyNumber> list, int first, int last) {
-        // PRE: List is filled and is unsorted. 
-        // POST: Recursively sorts the list by norm in ascending order. 
-
-        if (first < last) {
-            int splitPoint;
-            Pincer(list, first, last, out splitPoint);
-            QuickSort(list, first, splitPoint - 1);
-            QuickSort(list, splitPoint + 1, last);
-
-        }
+        return Math.Sqrt(total);
     }
 
     public static void Main() {
         // POST: Outputs the happy numbers with the highest norms.
 
-        List<HappyNumber> happy = new List<HappyNumber>();
+        SortedList<double, long> happy = new SortedList<double, long>();
         Console.Write("First Argument: ");
         string arg1 = Console.ReadLine();
         long lower = long.Parse(arg1);
@@ -159,22 +81,29 @@ public class HappyNumbers {
         long upper = long.Parse(arg2);
 
         if (lower > upper) {
-            Swap(lower, upper);
+            long temp = lower;
+            lower = upper;
+            upper = temp;
         }
 
-        for (long i = lower; i <= upper; i++) {
+        for (long i = lower; i < upper; i++) {
             if (IsHappy(i)) {
-                HappyNumber number = new HappyNumber(i);
-                happy.Add(number);
-                number.norm = CalculateNorm(ref number);
+                double norm = CalculateNorm(i);
+                happy.Add(norm, i);
             }
         }
 
-        // Next step: Sort by norm
-        QuickSort(happy, 0, happy.Count - 1);
+        int size = happy.Count >= 10 ? 10 : happy.Count;
+        if (size == 0) {
+            Console.WriteLine("NOBODY'S HAPPY :(");
+        } else {
+            List<double> keys = happy.Keys.ToList();
+            foreach (double some in keys) {
+                Console.WriteLine(some);
+            }
+        }
 
-        // Final step: output the happy numbers
+
     }
         
 }
-
