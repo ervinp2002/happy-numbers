@@ -2,11 +2,12 @@
 Ervin Pangilinan
 CSC 330: Organization of Programming Languages
 Project 1: Base 10 Happy Numbers Norms
-Driver Program in C
+Main Program in C
 */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <math.h>
 
 typedef struct {
@@ -14,67 +15,18 @@ typedef struct {
     double norm;
 } HappyNumber;
 
-int dsum(int n);
-int happy(int n);
-
 void swap(long *arg1, long *arg2);
-void arraySwap(HappyNumber *value1, HappyNumber *value2);
 void getArguments(long *lower, long *upper);
-
-void quicksort(HappyNumber arr[], int first, int last);
-void pincer(HappyNumber arr[], int first, int last, int *split);
-
-void pincer(HappyNumber arr[], int first, int last, int *split) {
-    // PRE: Called during a quicksort. 
-    // POST: Moves all values less than pivot to the right and greater to the left. 
-
-    int pivot = first;
-    int saveFirst = first;		
-    first++;
-
-    while (first <= last) {
-        while ((arr[first].norm <= arr[pivot].norm) && (first <= last)) last--;
-        while ((arr[last].norm >= arr[pivot].norm) && (first <= last)) first++;  
-        if (first < last) {
-            arraySwap(&arr[first], &arr[last]);
-            first++;	
-            last--;
-        }
-    }
-
-    split = last;
-    arraySwap(&arr[saveFirst], &arr[*split]); 
-}
+long digitSum(long n);
+bool isHappy(long number);
 
 void swap(long *arg1, long *arg2) {
-    // PRE: Two pointers are passed as arguments. 
+    // PRE: Two variables are initialized and their addresses are passed in. 
     // POST: Swaps the addresses of the arguments. 
 
     long temp = *arg1;
     *arg1 = *arg2;
     *arg2 = temp;
-}
-
-// Overloaded Swap Function. 
-void arraySwap(HappyNumber *value1, HappyNumber *value2) {
-    // PRE: Happy Numbers that are in the array are passed as arguments. 
-    // POST: Swaps array elements. 
-
-    HappyNumber temp = *value1;
-    *value1 = *value2;
-    *value2 = temp;
-}
-
-void quicksort(HappyNumber arr[], int first, int last) {
-    // PRE: Array of happy numbers, with first and last index are passed in.
-    // POST: Recursively sorts the array by descending norms. 
-
-    if (first < last) {
-        int splitPoint;
-        pincer(arr, first, last, splitPoint);
-        quicksort(arr, first, splitPoint - 1);
-        quicksort(arr, splitPoint + 1, last);
-    }
 }
 
 void getArguments(long *lower, long *upper) {
@@ -102,27 +54,29 @@ void getArguments(long *lower, long *upper) {
     }
 }
 
-// Following 2 functions pulled from Rosetta Code.
-int dsum(int n) {
-    // PRE: Integer is passed as an argument. 
-    // POST: Returns the sum of the square of each digit. 
+// Function modified from Rosetta Code version. 
+long digitSum(long n) {
+    // PRE:
+    // POST:
 
-    int sum, x;
-    for (sum = 0; n; n /= 10) x = n % 10, sum += x * x;
-	return sum;
+    int sum, digit;
+    for (sum = 0; n != 0; n /= 10) {    // Stefan showed me this idea. 
+        digit = n % 10;
+        sum += digit * digit;
+    }
+
+    return sum;
 }
 
-// Pulled from Rosetta Code. 
-int happy(int n) {
-    // PRE: Integer is passed as an argument. 
-    // POST: Returns a 1 if argument is happy, otherwise 0.
+bool isHappy(long number) {
+    // PRE: Bounds to find happy numbers have already been established. 
+    // POST: Returns true or false if the passed argument is happy. 
 
-    int nn;
-	while (n > 999) n = dsum(n);    // 4 digit numbers can't cycle. 
-	nn = dsum(n);
-	while (nn != n && nn != 1) 
-        n = dsum(n), nn = dsum(dsum(nn));    // Cycle detection. 
-	return n == 1;
+    while (number != 1 && number != 4) {    // 4 will always start a cycle leading to an unhappy number. 
+        number = digitSum(number);
+    }
+
+    return number == 1 ? true : false;
 }
 
 int main() {
@@ -136,8 +90,9 @@ int main() {
     getArguments(&lower, &upper);
     if (lower > upper) swap(&lower, &upper);
 
-    int result = happy(10);
-    printf("%d\n", result);
+    printf("Lower is: %li\n", lower);
+    printf("Upper is: %li\n", upper);
+
     
 
     return 0;
