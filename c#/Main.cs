@@ -64,6 +64,7 @@ public class HappyNumbers {
         foreach (long element in sequence) {
             total += Math.Pow(element, 2);
         }
+        sequence.Clear();
 
         return Math.Sqrt(total);
     }
@@ -72,38 +73,50 @@ public class HappyNumbers {
         // POST: Outputs the happy numbers with the highest norms.
 
         SortedList<double, long> happy = new SortedList<double, long>();
-        Console.Write("First Argument: ");
-        string arg1 = Console.ReadLine();
-        long lower = long.Parse(arg1);
+        string arg1, arg2;
+        long upper, lower;
 
-        Console.Write("Second Argument: ");
-        string arg2 = Console.ReadLine();
-        long upper = long.Parse(arg2);
+        try {
+            Console.Write("First Argument: ");
+            arg1 = Console.ReadLine();
+            lower = long.Parse(arg1);
 
-        if (lower > upper) {
-            long temp = lower;
-            lower = upper;
-            upper = temp;
-        }
+            Console.Write("Second Argument: ");
+            arg2 = Console.ReadLine();
+            upper = long.Parse(arg2);
 
-        for (long i = lower; i < upper; i++) {
-            if (IsHappy(i)) {
-                double norm = CalculateNorm(i);
-                happy.Add(norm, i);
+            if (lower > upper) {
+                long temp = lower;
+                lower = upper;
+                upper = temp;
             }
-        }
 
-        int size = happy.Count >= 10 ? 10 : happy.Count;
-        if (size == 0) {
-            Console.WriteLine("NOBODY'S HAPPY :(");
-        } else {
-            List<double> keys = happy.Keys.ToList();
-            foreach (double some in keys) {
-                Console.WriteLine(some);
+            for (long i = lower; i < upper; i++) {
+                if (IsHappy(i)) {
+                    double norm = CalculateNorm(i);
+                    happy.Add(norm, i);
+                }
             }
+
+            int size = happy.Count >= 10 ? 10 : happy.Count;
+            if (size == 0) {
+                Console.WriteLine("NOBODY'S HAPPY :(");
+            } else {
+                List<double> keys = happy.Keys.ToList();
+                keys.Reverse();
+
+                // Acts as a pseudo-iterator to stop at a maximum of 10 outputted numbers. 
+                int count = 0;
+                foreach (double norm in keys) {
+                    if (count < size) {
+                        Console.WriteLine(happy[norm]);
+                        count++;
+                    }
+                }
+            }
+
+        } catch (FormatException ex) {
+            Console.WriteLine("Invalid input.");
         }
-
-
     }
-        
 }
