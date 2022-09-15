@@ -16,7 +16,9 @@ typedef struct {
 } HappyNumber;
 
 void swap(long *arg1, long *arg2);
+void swapElements(HappyNumber *arg1, HappyNumber *arg2);
 void getArguments(long *lower, long *upper);
+void bubbleSort(HappyNumber arr[]);
 long digitSum(long n);
 bool isHappy(long number);
 
@@ -25,6 +27,15 @@ void swap(long *arg1, long *arg2) {
     // POST: Swaps the addresses of the arguments. 
 
     long temp = *arg1;
+    *arg1 = *arg2;
+    *arg2 = temp;
+}
+
+void swapElements(HappyNumber *arg1, HappyNumber *arg2) {
+    // PRE: Passed arguments are array elements. 
+    // POST: 
+
+    HappyNumber temp = *arg1;
     *arg1 = *arg2;
     *arg2 = temp;
 }
@@ -77,6 +88,23 @@ bool isHappy(long number) {
     }
 
     return number == 1 ? true : false;
+}
+
+void bubbleSort(HappyNumber arr[]) {
+    // PRE: Array is already filled with 10 elements.
+    // POST: Sorts the array by descending norm in quadratic time. 
+
+    bool sorted = false;
+    int size = sizeof(arr) / sizeof(HappyNumber);
+    while (!sorted) {
+        for (int i = 0; i < size; i++) {
+            for (int j = 1; i < size; j++) {
+                if (arr[i].norm < arr[j].norm) {
+                    swapElements(&arr[i], &arr[j]);
+                }
+            }
+        }
+    }
 }
 
 int main() {
