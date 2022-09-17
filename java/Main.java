@@ -2,7 +2,7 @@
 Ervin Pangilinan
 CSC 330: Organization of Programming Languages
 Project 1: Base 10 Happy Numbers Norms
-Client Program in Java
+Main Program in Java
 */
 
 import java.util.*;
