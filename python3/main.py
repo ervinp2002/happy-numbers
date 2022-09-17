@@ -2,7 +2,7 @@
 Ervin Pangilinan
 CSC 330: Organization of Programming Languages
 Project 1: Base 10 Happy Numbers Norms
-Driver Program in Python3
+Main Program in Python3
 """
 
 import math
