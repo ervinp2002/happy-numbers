@@ -6,7 +6,6 @@ Main Program in C
 */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
 
@@ -20,9 +19,9 @@ void swapElements(HappyNumber *arg1, HappyNumber *arg2);
 void getArguments(long *lower, long *upper);
 void selectionSort(HappyNumber arr[], int length);
 void findHappy(HappyNumber arr[], long lower, long upper);
-void printHappy(HappyNumber arr[]);
+void printHappy(HappyNumber arr[], int length);
 double findNorm(long number);
-long digitSum(long n);
+long digitSum(long number);
 bool isHappy(long number);
 
 void swap(long *arg1, long *arg2) {
@@ -69,13 +68,13 @@ void getArguments(long *lower, long *upper) {
 }
 
 // Function modified from Rosetta Code version. 
-long digitSum(long n) {
+long digitSum(long number) {
     // PRE: Long is passed in as an argument. 
     // POST: Returns the squared sum of the digits of that long. 
 
     int sum, digit;
-    for (sum = 0; n != 0; n /= 10) {    // Stefan showed me this idea. 
-        digit = n % 10;
+    for (sum = 0; number != 0; number /= 10) {    // Stefan showed me this idea. 
+        digit = number % 10;
         sum += digit * digit;
     }
 
@@ -97,22 +96,21 @@ void selectionSort(HappyNumber arr[], int length) {
     // PRE: Array is already filled with 10 elements.
     // POST: Sorts the array by descending norm in quadratic time. 
 
-    // Since the array size is small, running in quadratic time should not matter. 
-    int index = 0;
+    // Since the array size is small, running in quadratic time should be fine. 
+    int current = 0;
     int max = 0;
-    int i;
+    int next;
 
-    // Find the current min
-    for (index; index < length; index++) {
-        max = index;
-        for (i = max + 1; i < length; i++) {
-            if (arr[i].norm > arr[max].norm) {
-                max = i;
+    for (current; current < length; current++) {
+        max = current;
+        for (next = max + 1; next < length; next++) {
+            if (arr[next].norm > arr[max].norm) {
+                max = next;
             }
         }
 
-        if (max != index) {
-            swapElements(&arr[index], &arr[max]);
+        if (max != current) {
+            swapElements(&arr[current], &arr[max]);
         }
     }
 }
@@ -124,10 +122,12 @@ double findNorm(long number) {
     if (number == 1) {
         return 1.0;
     } else {
-        double total = 0.0;
+        double total = (number * number) + 1;
+        int addend;
         while (number != 1) {
-            number = digitSum(number);
-            total += number;
+            addend = digitSum(number);
+            total += (addend * addend);
+            number = addend;
         }
 
         return sqrt(total);
@@ -136,7 +136,7 @@ double findNorm(long number) {
 
 void findHappy(HappyNumber arr[], long lower, long upper) {
     // PRE: Upper and lower bounds have been established. 
-    // POST: Keeps track of the 10 happy numbers with the highest norms. 
+    // POST: Ten happy numbers with the highest norms are contained.
 
     int count = 0;
     for (lower; lower < upper; lower++) {
@@ -147,42 +147,48 @@ void findHappy(HappyNumber arr[], long lower, long upper) {
             if (count < 10) {
                 arr[count] = new;
                 count++;
-            } else if (count >= 10) {
+            } else if (count == 10) {
                 selectionSort(arr, 10);
+
+                /* In cases where there are more than 10 happy numbers in a given
+                   range, this helps to push out the minimum value and keep track
+                   of the happy numbers with the largest norms. */
+
                 if (new.norm > arr[9].norm) {
-                    swapElements(&new, &arr[9]);
+                    arr[9].value = new.value;
+                    arr[9].norm = new.norm;
                     selectionSort(arr, 10);
                 }
             }
         }
     }
 
-    /* Implemented to initialize remaining array elements in cases where
+    /* Implemented to initialize remaining empty elements in cases where
        a specified range has less than 10 happy numbers. */
     if (count < 10) {
-        int i;
+        int index;
         HappyNumber *happyPtr = arr;
-        for (i = count; i < 10; i++) {
-            (happyPtr + i) -> value = 0;
-            (happyPtr + i) -> norm = 0;
+        for (index = count; index < 10; index++) {
+            (happyPtr + index) -> value = 0;
+            (happyPtr + index) -> norm = 0;
         }
 
         selectionSort(arr, count);
     }
 }
 
-void printHappy(HappyNumber arr[]) {
+void printHappy(HappyNumber arr[], int length) {
     // PRE: Array has already been sorted. 
     // POST: Outputs the value of non-zero structs in the array.
 
-    int i;
-    int notHappy = 0;
+    int index;
+    int notHappy = 0;   
     HappyNumber *happyPtr = arr;
-    for (i = 0; i < 10; i++) {
-        if ((happyPtr + i) -> value != 0) {
-            printf("%li\n", (happyPtr + i) -> value);
+    for (index = 0; index < length; index++) {
+        if ((happyPtr + index) -> value != 0) {
+            printf("%li\n", (happyPtr + index) -> value);
         } else {
-            notHappy++;
+            notHappy++;     // Used in cases where there are no happy numbers in range.
         }
     }
 
@@ -201,7 +207,7 @@ int main() {
     if (lower > upper) swap(&lower, &upper);
 
     findHappy(list, lower, upper);
-    printHappy(list);
+    printHappy(list, 10);
     
     return 0;
 }
