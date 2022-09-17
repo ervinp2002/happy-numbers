@@ -18,7 +18,10 @@ typedef struct {
 void swap(long *arg1, long *arg2);
 void swapElements(HappyNumber *arg1, HappyNumber *arg2);
 void getArguments(long *lower, long *upper);
-void bubbleSort(HappyNumber arr[]);
+void selectionSort(HappyNumber arr[], int length);
+void findHappy(HappyNumber arr[], long lower, long upper);
+void printHappy(HappyNumber arr[]);
+double findNorm(long number);
 long digitSum(long n);
 bool isHappy(long number);
 
@@ -33,7 +36,7 @@ void swap(long *arg1, long *arg2) {
 
 void swapElements(HappyNumber *arg1, HappyNumber *arg2) {
     // PRE: Passed arguments are array elements. 
-    // POST: 
+    // POST: Swaps the addresses of the array elements. 
 
     HappyNumber temp = *arg1;
     *arg1 = *arg2;
@@ -67,8 +70,8 @@ void getArguments(long *lower, long *upper) {
 
 // Function modified from Rosetta Code version. 
 long digitSum(long n) {
-    // PRE:
-    // POST:
+    // PRE: Long is passed in as an argument. 
+    // POST: Returns the squared sum of the digits of that long. 
 
     int sum, digit;
     for (sum = 0; n != 0; n /= 10) {    // Stefan showed me this idea. 
@@ -90,21 +93,100 @@ bool isHappy(long number) {
     return number == 1 ? true : false;
 }
 
-void bubbleSort(HappyNumber arr[]) {
+void selectionSort(HappyNumber arr[], int length) {
     // PRE: Array is already filled with 10 elements.
     // POST: Sorts the array by descending norm in quadratic time. 
 
-    bool sorted = false;
-    int size = sizeof(arr) / sizeof(HappyNumber);
-    while (!sorted) {
-        for (int i = 0; i < size; i++) {
-            for (int j = 1; i < size; j++) {
-                if (arr[i].norm < arr[j].norm) {
-                    swapElements(&arr[i], &arr[j]);
+    // Since the array size is small, running in quadratic time should not matter. 
+    int index = 0;
+    int max = 0;
+    int i;
+
+    // Find the current min
+    for (index; index < length; index++) {
+        max = index;
+        for (i = max + 1; i < length; i++) {
+            if (arr[i].norm > arr[max].norm) {
+                max = i;
+            }
+        }
+
+        if (max != index) {
+            swapElements(&arr[index], &arr[max]);
+        }
+    }
+}
+
+double findNorm(long number) {
+    // PRE: The passed argument is a happy number. 
+    // POST: Returns the norm of that happy number.
+
+    if (number == 1) {
+        return 1.0;
+    } else {
+        double total = 0.0;
+        while (number != 1) {
+            number = digitSum(number);
+            total += number;
+        }
+
+        return sqrt(total);
+    }
+}
+
+void findHappy(HappyNumber arr[], long lower, long upper) {
+    // PRE: Upper and lower bounds have been established. 
+    // POST: Keeps track of the 10 happy numbers with the highest norms. 
+
+    int count = 0;
+    for (lower; lower < upper; lower++) {
+        if (isHappy(lower)) {
+            double norm = findNorm(lower);
+            HappyNumber new = {lower, norm};
+
+            if (count < 10) {
+                arr[count] = new;
+                count++;
+            } else if (count >= 10) {
+                selectionSort(arr, 10);
+                if (new.norm > arr[9].norm) {
+                    swapElements(&new, &arr[9]);
+                    selectionSort(arr, 10);
                 }
             }
         }
     }
+
+    /* Implemented to initialize remaining array elements in cases where
+       a specified range has less than 10 happy numbers. */
+    if (count < 10) {
+        int i;
+        HappyNumber *happyPtr = arr;
+        for (i = count; i < 10; i++) {
+            (happyPtr + i) -> value = 0;
+            (happyPtr + i) -> norm = 0;
+        }
+
+        selectionSort(arr, count);
+    }
+}
+
+void printHappy(HappyNumber arr[]) {
+    // PRE: Array has already been sorted. 
+    // POST: Outputs the value of non-zero structs in the array.
+
+    int i;
+    int notHappy = 0;
+    HappyNumber *happyPtr = arr;
+    for (i = 0; i < 10; i++) {
+        if ((happyPtr + i) -> value != 0) {
+            printf("%li\n", (happyPtr + i) -> value);
+        } else {
+            notHappy++;
+        }
+    }
+
+    if (notHappy == 10) printf("NOBODY'S HAPPY :(\n");
 }
 
 int main() {
@@ -118,10 +200,8 @@ int main() {
     getArguments(&lower, &upper);
     if (lower > upper) swap(&lower, &upper);
 
-    printf("Lower is: %li\n", lower);
-    printf("Upper is: %li\n", upper);
-
+    findHappy(list, lower, upper);
+    printHappy(list);
     
-
     return 0;
 }
