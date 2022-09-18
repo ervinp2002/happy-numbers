@@ -7,11 +7,14 @@ program Main
 
     implicit none
 
-    real :: a, b, result
-    a = 15.5
-    b = 25.67
-    result = a + b
+    ! NOTES TO SELF
+    ! Step 1: Get range from input
+    ! Step 2: Determine if each number in range is happy
+    ! Step 3: Find norm of happy number
+    ! Step 4: Keep track of happy numbers with the highest norms. 
 
-    print *, "The total is ", result
+    
+
+    
 
 end program Main
