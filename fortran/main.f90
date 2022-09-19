@@ -34,6 +34,7 @@ module happy_nums
 
             integer, intent(in) :: number
             integer :: count
+            happy = .true.
 
             ! Unhappy numbers will always have 4 in their sequence. 
             count = number
@@ -57,19 +58,38 @@ program main
     implicit none
 
     integer :: list(10)
-    integer :: arg1
-    integer :: arg2
+    integer :: lower
+    integer :: upper
+    integer :: temp
+    integer :: current
     character(len = 20) :: str
-    character(len = 20) :: str2
+    character(len = 20) :: temp_str
+    logical :: happy
 
     ! Step 1: Get range from input
     write(*, "(a)", advance = "no") "First Argument: "
     read(*, *) str
-    read(str, *) arg1
+    read(str, *) lower
 
     write(*, "(a)", advance = "no") "Second Argument: "
-    read(*, *) str2
-    read(str2, *) arg2
+    read(*, *) str
+    read(str, *) upper
+
+    if (lower > upper) then
+        temp = lower
+        lower = upper
+        upper = temp
+    end if
+
+    do while (current < upper)
+        happy = is_happy(current)
+        write(temp_str, *) current
+        if (happy .eqv. .true.) then
+            write(*, "(a)", advance = "no") trim(adjustl(temp_str))
+            write(*, "(a)") " is happy."
+        end if
+        current = current + 1
+    end do
 
     ! Step 2: Determine if each number in range is happy
 
