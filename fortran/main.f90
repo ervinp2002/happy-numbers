@@ -21,7 +21,7 @@ module happy_nums
             counter = number
             do while (counter /= 0)
                 digit = mod(counter, 10)
-                sum = digit ** 2
+                sum = sum + (digit ** 2)
                 counter = counter / 10  
             end do
 
