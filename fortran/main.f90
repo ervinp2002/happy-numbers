@@ -4,7 +4,7 @@
 ! Main Program in Fortran 90
 
 module happy_nums
-    ! Contains functions for happy numbers
+    ! Contains functions for happy numbers.
     implicit none
 
     contains
@@ -15,7 +15,6 @@ module happy_nums
 
             integer, intent(in) :: number
             integer :: digit
-            !integer :: sum
             integer :: counter
 
             sum = 0
@@ -28,16 +27,38 @@ module happy_nums
 
         end function digit_sum
 
+        logical function is_happy(number) result(happy)
+            ! PRE: Integer passed in is within the user-specified range. 
+            ! POST: Returns a boolean if the integer is happy. 
+            implicit none
+
+            integer, intent(in) :: number
+            integer :: count
+
+            ! Unhappy numbers will always have 4 in their sequence. 
+            count = number
+            do while (count /= 1 .and. count /= 4)
+                count = digit_sum(count)
+            end do
+
+            if (count == 1) then
+                happy = .true.
+            else
+                happy = .false.
+            end if
+
+        end function is_happy
+
 end module happy_nums
 
-program Main
+program main
     ! POST: Outputs the 10 happy numbers with the highest norms.
     use happy_nums
     implicit none
 
+    integer :: list(10)
     integer :: arg1
     integer :: arg2
-    integer :: num
     character(len = 20) :: str
     character(len = 20) :: str2
 
@@ -56,4 +77,4 @@ program Main
 
     ! Step 4: Keep track of happy numbers with the highest norms.
 
-end program Main
+end program main
