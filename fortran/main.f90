@@ -50,6 +50,68 @@ module happy_nums
 
         end function is_happy
 
+        real function find_norm(number) result(norm)
+            ! PRE: Passed argument is a happy number. 
+            ! POST: Returns the norm of the happy number. 
+            implicit none
+
+            integer, intent(in) :: number
+            integer :: counter
+            real :: sum
+
+            counter = number
+            sum = (number ** 2) + 1
+            do while (counter /= 1)
+                counter = digit_sum(counter)
+                sum = sum + (counter ** 2)
+            end do
+            norm = sqrt(sum)
+
+        end function find_norm
+
+        subroutine selection_sort(numbers, norms)
+            ! PRE: Parallel arrays for happy numbers and norms are size 10 when passed in. 
+            ! POST: Sorts arrays by descending norms in quadratic time. 
+            implicit none
+
+            integer, intent(inout) :: numbers(:)
+            real, intent(inout) :: norms(:)
+
+            ! Used for swaps. 
+            integer :: temp_val
+            real :: temp_norm
+
+            ! Keeps track of indices. 
+            integer :: index, length, max, next
+
+            length = size(numbers)
+            max = 1
+            do index = 1, length
+                max = index
+                do next = max + 1, length
+                    if (norms(index) > norms(max)) then
+                        max = next
+                    end if
+
+                    if (max /= index) then
+                        ! Temp variables are on current index
+                        temp_val = numbers(index)
+                        temp_norm = norms(index)
+
+                        ! Index swaps to the maximum value
+                        numbers(index) = numbers(max)
+                        norms(index) = norms(max)
+
+                        ! Max values gets the temp
+                        numbers(max) = temp_val
+                        norms(max) = temp_norm
+
+                    end if
+                end do
+            end do
+
+        end subroutine selection_sort
+
 end module happy_nums
 
 program main
@@ -57,18 +119,26 @@ program main
     use happy_nums
     implicit none
 
-    integer :: list(10)
+    ! Parallel arrays to store happy number and its norm. 
+    integer :: values(10)
+    real :: norms(10)
+
+    ! Estabishes the bounds to find happy numbers. 
     integer :: lower
     integer :: upper
-    integer :: temp
-    integer :: current
-    character(len = 20) :: str
-    character(len = 20) :: temp_str
-    logical :: happy
 
-    ! Step 1: Get range from input
+    ! To be used with swaps. 
+    integer :: temp
+    real :: temp_norm
+
+    ! To be used with iterations. 
+    integer :: current
+    integer :: counter
+    character(len = 20) :: str
+
+    ! Establish upper and lower bounds from input
     write(*, "(a)", advance = "no") "First Argument: "
-    read(*, *) str
+    read(*, *) str                  ! Converts string to integer
     read(str, *) lower
 
     write(*, "(a)", advance = "no") "Second Argument: "
@@ -81,20 +151,43 @@ program main
         upper = temp
     end if
 
-    do while (current < upper)
-        happy = is_happy(current)
-        write(temp_str, *) current
-        if (happy .eqv. .true.) then
-            write(*, "(a)", advance = "no") trim(adjustl(temp_str))
-            write(*, "(a)") " is happy."
+    ! Check each integer that falls within bounds of range. 
+    counter = 1
+    do current = lower, upper
+        write(str, *) current
+        if (is_happy(current) .eqv. .true.) then
+            temp_norm = find_norm(current)
+
+            if (counter < 10) then
+                values(counter) = current
+                norms(counter) = temp_norm   
+                counter = counter + 1   
+            else
+                ! Keep track of happy numbers with the highest norms.
+                if (temp_norm > minval(norms)) then
+                    norms(minloc(norms)) = temp_norm
+                    values(minloc(norms)) = current
+                end if
+            end if
         end if
-        current = current + 1
     end do
 
-    ! Step 2: Determine if each number in range is happy
+    if (counter <= 10) then
+        do counter = counter, 10
+            values(counter) = 0
+            norms(counter) = 0
+        end do
+    end if
 
-    ! Step 3: Find norm of happy number
+    call selection_sort(values, norms)
 
-    ! Step 4: Keep track of happy numbers with the highest norms.
+    do counter = 1, 10
+        if (norms(counter) /= 0) then
+            write(str, "(i20)") values(counter)
+            write(*, "(a)") trim(adjustl(str))
+        else 
+            exit
+        end if
+    end do
 
 end program main
