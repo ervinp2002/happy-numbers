@@ -4,18 +4,18 @@
 ! Main Program in Fortran 90
 
 module happy_nums
-    ! Contains functions for happy numbers.
+    ! Contains procedures for happy numbers.
     implicit none
 
     contains
-        integer function digit_sum(number) result(sum)
+        integer(kind = 8) function digit_sum(number) result(sum)
             ! PRE: An integer is passed in. 
             ! POST: Returns the squared digit sum of the integer. 
             implicit none
 
-            integer, intent(in) :: number
-            integer :: digit
-            integer :: counter
+            integer(kind = 8), intent(in) :: number
+            integer(kind = 8) :: digit
+            integer(kind = 8) :: counter
 
             sum = 0
             counter = number
@@ -32,8 +32,8 @@ module happy_nums
             ! POST: Returns a boolean if the integer is happy. 
             implicit none
 
-            integer, intent(in) :: number
-            integer :: count
+            integer(kind = 8), intent(in) :: number
+            integer(kind = 8) :: count
             happy = .true.
 
             ! Unhappy numbers will always have 4 in their sequence. 
@@ -50,67 +50,70 @@ module happy_nums
 
         end function is_happy
 
-        real function find_norm(number) result(norm)
+        real(kind = 8) function find_norm(number) result(norm)
             ! PRE: Passed argument is a happy number. 
             ! POST: Returns the norm of the happy number. 
             implicit none
 
-            integer, intent(in) :: number
-            integer :: counter
-            real :: sum
+            integer(kind = 8), intent(in) :: number
+            integer(kind = 8) :: counter
+            integer(kind = 8) :: addend
+            real(kind = 8) :: total
+ 
+            if (number == 1) then 
+                norm = 1.0
+            else
+                total = (number ** 2) + 1
+                counter = number
+                do while (counter /= 1)
+                    addend = digit_sum(counter)
+                    total = total + (addend * addend)
+                    counter = addend
+                end do   
+            end if
 
-            counter = number
-            sum = (number ** 2) + 1
-            do while (counter /= 1)
-                counter = digit_sum(counter)
-                sum = sum + (counter ** 2)
-            end do
-            norm = sqrt(sum)
+            norm = sqrt(total)
 
         end function find_norm
 
-        subroutine selection_sort(numbers, norms)
-            ! PRE: Parallel arrays for happy numbers and norms are size 10 when passed in. 
-            ! POST: Sorts arrays by descending norms in quadratic time. 
+        subroutine bubble_sort(numbers, norms)
+            ! PRE: Parallel arrays are completely filled when passed in. 
+            ! POST: Sorts by descending norms in quadratic time. 
             implicit none
 
-            integer, intent(inout) :: numbers(:)
-            real, intent(inout) :: norms(:)
+            integer(kind = 8), intent(inout) :: numbers(:)
+            real(kind = 8), intent(inout) :: norms(:)
 
-            ! Used for swaps. 
-            integer :: temp_val
-            real :: temp_norm
+            integer :: index
+            logical :: needs_swap = .true.
 
-            ! Keeps track of indices. 
-            integer :: index, length, max, next
+            integer(kind = 8) :: temp_val
+            real(kind = 8) :: temp_norm
 
-            length = size(numbers)
-            max = 1
-            do index = 1, length
-                max = index
-                do next = max + 1, length
-                    if (norms(index) > norms(max)) then
-                        max = next
-                    end if
+            do while (needs_swap .eqv. .true.)
+                needs_swap = .false.
+                do index = 1, size(numbers) - 1
+                    if (norms(index) < norms(index + 1)) then
 
-                    if (max /= index) then
-                        ! Temp variables are on current index
+                        ! Temp variables to hold current.
                         temp_val = numbers(index)
                         temp_norm = norms(index)
 
-                        ! Index swaps to the maximum value
-                        numbers(index) = numbers(max)
-                        norms(index) = norms(max)
+                        ! Move the bigger value-norm pair to the front.
+                        numbers(index) = numbers(index + 1)
+                        norms(index) = norms(index + 1)
 
-                        ! Max values gets the temp
-                        numbers(max) = temp_val
-                        norms(max) = temp_norm
+                        ! Move the smaller value-norm pair to the back
+                        numbers(index + 1) =  temp_val
+                        norms(index + 1) = temp_norm
+
+                        needs_swap = .true.
 
                     end if
                 end do
             end do
 
-        end subroutine selection_sort
+        end subroutine bubble_sort
 
 end module happy_nums
 
@@ -120,25 +123,26 @@ program main
     implicit none
 
     ! Parallel arrays to store happy number and its norm. 
-    integer :: values(10)
-    real :: norms(10)
+    integer(kind = 8) :: values(10)
+    real(kind = 8) :: norms(10)
 
     ! Estabishes the bounds to find happy numbers. 
-    integer :: lower
-    integer :: upper
+    integer(kind = 8) :: lower
+    integer(kind = 8) :: upper
 
     ! To be used with swaps. 
-    integer :: temp
-    real :: temp_norm
+    integer(kind = 8) :: temp
+    real(kind = 8) :: temp_norm
 
     ! To be used with iterations. 
-    integer :: current
+    integer(kind = 8) :: current
     integer :: counter
+    integer :: save_count
     character(len = 20) :: str
 
     ! Establish upper and lower bounds from input
     write(*, "(a)", advance = "no") "First Argument: "
-    read(*, *) str                  ! Converts string to integer
+    read(*, *) str
     read(str, *) lower
 
     write(*, "(a)", advance = "no") "Second Argument: "
@@ -153,35 +157,36 @@ program main
 
     ! Check each integer that falls within bounds of range. 
     counter = 1
-    do current = lower, upper
-        write(str, *) current
+    do current = lower, upper - 1
         if (is_happy(current) .eqv. .true.) then
             temp_norm = find_norm(current)
 
+            ! Fill the parallel arrays if there are still empty indices. 
             if (counter < 10) then
                 values(counter) = current
                 norms(counter) = temp_norm   
                 counter = counter + 1   
             else
-                ! Keep track of happy numbers with the highest norms.
+                ! Push out minimum values when the parallel arrays are full. 
                 if (temp_norm > minval(norms)) then
-                    norms(minloc(norms)) = temp_norm
                     values(minloc(norms)) = current
+                    norms(minloc(norms)) = temp_norm
                 end if
             end if
         end if
     end do
 
-    if (counter <= 10) then
+    ! Initialize empty indices to 0. 
+    save_count = counter
+    if (counter < 10) then
         do counter = counter, 10
             values(counter) = 0
             norms(counter) = 0
         end do
     end if
 
-    call selection_sort(values, norms)
-
-    do counter = 1, 10
+    call bubble_sort(values, norms)
+    do counter = 1, 10 
         if (norms(counter) /= 0) then
             write(str, "(i20)") values(counter)
             write(*, "(a)") trim(adjustl(str))
@@ -189,5 +194,9 @@ program main
             exit
         end if
     end do
+
+    if (save_count == 1) then
+        write(*, "(a)") trim(adjustl("NOBODY'S HAPPY :("))
+    end if
 
 end program main
