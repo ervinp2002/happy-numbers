@@ -63,7 +63,7 @@ def getHappyNumbers(dictionary, lower, upper):
     # PRE: Empty dictionary, lower, and upper bounds are passed as arguments. 
     # POST: Puts norms-happy number pairs in dictionary. 
 
-    for n in range(lower, upper):
+    for n in range(lower, upper + 1):
         if (happy(n)): 
             value = n       # Save the value of the actual happy number. 
             sequence = set()    

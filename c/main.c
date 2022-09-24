@@ -139,7 +139,7 @@ void findHappy(HappyNumber arr[], long lower, long upper) {
     // POST: Ten happy numbers with the highest norms are contained.
 
     int count = 0;
-    for (lower; lower < upper; lower++) {
+    for (lower; lower <= upper; lower++) {
         if (isHappy(lower)) {
             double norm = findNorm(lower);
             HappyNumber new = {lower, norm};

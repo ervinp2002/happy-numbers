@@ -91,7 +91,7 @@ public class HappyNumbers {
                 upper = temp;
             }
 
-            for (long i = lower; i < upper; i++) {
+            for (long i = lower; i <= upper; i++) {
                 if (IsHappy(i)) {
                     double norm = CalculateNorm(i);
                     happy.Add(norm, i);

@@ -38,7 +38,7 @@ public class Main {
         // PRE: Lower, upper bounds, and TreeMap are passed as arguments. 
         // POST: Finds happy numbers that fall within bounds and puts values and norms into TreeMap. 
 
-        for (long i = (long)lower; i < (long)upper; i++) {
+        for (long i = (long)lower; i <= (long)upper; i++) {
             if (happy(i)) {
                 HappyNumber happy = new HappyNumber(i);
                 tree.put(new Double(happy.getNorm()), happy.toString()); 

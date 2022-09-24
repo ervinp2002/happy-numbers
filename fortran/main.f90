@@ -140,7 +140,7 @@ program main
     integer :: save_count
     character(len = 20) :: str
 
-    ! Establish upper and lower bounds from input
+    ! Establish upper and lower bounds from input.
     write(*, "(a)", advance = "no") "First Argument: "
     read(*, *) str
     read(str, *) lower
@@ -157,7 +157,7 @@ program main
 
     ! Check each integer that falls within bounds of range. 
     counter = 1
-    do current = lower, upper - 1
+    do current = lower, upper
         if (is_happy(current) .eqv. .true.) then
             temp_norm = find_norm(current)
 
