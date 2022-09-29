@@ -39,16 +39,18 @@ func isHappy(number int) bool {
 	// PRE: Argument passed in is within the bounds of the input range. 
 	// POST: Boolean value determines if the number is happy or not. 
 
-	/* Determining if a number is happy uses the same methodology as
-	   the C and Fortran implementations. */ 
+	/* Determining if a number is happy uses the same methodology 
+	   as the C and Fortran implementations. */ 
+	var happy bool = true
 	for number != 1 && number != 4 {
 		number = digitSum(number)
 	}
 
 	if number == 4 {
-		return false
+		happy = false
+		return happy
 	} else {
-		return true
+		return happy
 	}
 }
 
@@ -75,7 +77,7 @@ func findHappy(list map[float64]int, lower int, upper int) {
 	// PRE: Map to hold pairs, upper, and lower bounds have been declared.
 	// POST: Adds happy numbers and their norms to the map. 
 
-	for i := lower; lower <= upper; i++ {
+	for i := lower; i <= upper; i++ {
 		if isHappy(i) {
 			norm := findNorm(i)
 			list[norm] = i
@@ -94,14 +96,17 @@ func printResults(list map[float64]int, normsList []float64) {
 		limit = len(list)
 	}
 
-	for i := 0; i < limit; i++ {
-		fmt.Println(list[normsList[i]])
+	if limit == 0 {
+		fmt.Println("NOBODY'S HAPPY :(")
+	} else {
+		for i := 0; i < limit; i++ {
+			fmt.Println(list[normsList[i]])
+		}
 	}
 }
 
 func main() {
-	/* POST: Outputs the 10 happy numbers with highest norms 
-		     within the user-inputted range. */ 
+	// POST: Outputs the 10 happy numbers with highest norms within range.
 
 	var happyNums = make(map[float64]int)
 	var lower int
