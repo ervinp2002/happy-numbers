@@ -4,15 +4,17 @@
 ; Project 1: Base 10 Happy Number Norms
 ; Main Program in Lisp
 
-(defun swap (arg1 arg2)
-    ; PRE: Two initialized variables are passed in. 
-    ; POST: Swaps the value of those variables. 
+(defun digitSum (number)
+   "PRE: An integer is passed in as the argument. 
+    POST: Returns the squared digit sum of the argument."
 
-    (rotatef arg1 arg2)
+    (do ((n number (/ n 10))
+         (digit 0 (mod n 10))
+         (sum 0 (+ sum (* digit digit)))
+        )
+        ((= n 0))
+    ) 
 )
-
-; digitSum function
-
 
 ; isHappy function
 
@@ -27,7 +29,7 @@
 
 
 ; Main Program, referenced sample code from Lisp email. 
-(progn 
+(progn
     ; POST: Outputs the 10 happy numbers with the highest norms. 
 
     (defvar lower)
@@ -42,8 +44,9 @@
     (setf upper (read))
 
     (if (> lower upper)
-        (swap lower upper)
+        (rotatef lower upper)
     )
 
-
+    (princ (digitSum 10))
 )
+
