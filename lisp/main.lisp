@@ -29,6 +29,7 @@
     "PRE: A positive integer is passed in as the argument.
      POST: Returns a boolean to determine if the argument is happy."
 
+    ; The same approach as a bunch of my other implementations.
     (let ((n number))
         (loop
             (setq n (digitSum n))
@@ -51,8 +52,13 @@
     )
 )
 
-; findHappy function
+(defun findHappy ()
+    "PRE: Hashtable for happy numbers, upper & lower bounds are passed in.
+     POST: Adds happy numbers and their norms to the hash table."
 
+
+
+)
 
 ; printResults function
 
@@ -75,15 +81,20 @@
     (rotatef lower upper)
 )
 
-(princ "Lower is ")
+(princ "Lower bound: ")
 (princ lower)
 (terpri)
 
-(princ "Upper is ")
+(princ "Upper bound: ")
 (princ upper)
 (terpri)
 
-(princ (isHappy upper))
-(terpri)
-(princ (findNorm 19))
-(terpri)
+(if (isHappy upper)
+    (progn
+        (princ "Upper bound is a happy number.")
+        (terpri)
+        (princ "Norm: ")
+        (princ (findNorm upper))
+        (terpri)
+    )
+)
