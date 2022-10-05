@@ -52,16 +52,40 @@
     )
 )
 
-(defun findHappy ()
+(defun findHappy (happyNums lower upper normList)
     "PRE: Hashtable for happy numbers, upper & lower bounds are passed in.
      POST: Adds happy numbers and their norms to the hash table."
-
-
-
+    
+    (let ((norm 1) (i lower))
+        (loop
+            (when (> i upper) (return happyNums))
+            (if (isHappy i)
+                (progn
+                    (setq norm (findNorm i))
+                    (setf (gethash norm happyNums) i)
+                    (setq normList (push 'i normList))
+                )
+            ) 
+            (setq i (+ 1 i))  
+        )
+    )
 )
 
-; printResults function
 
+(defun printResults (normList table)
+    (let ((size (length normList)) (counter 0))
+        (if (>= size 10)
+            (setq size 10)
+        )
+
+        (dolist (index normList)
+            (when (= counter size) (return))
+            (princ (gethash 'index table))
+            (terpri)
+            (setq counter (+ counter 1))
+        )
+    )
+)
 
 ; Main Program, referenced sample code from Lisp email. 
 ; POST: Outputs the 10 happy numbers with the highest norms. 
@@ -69,32 +93,27 @@
 (defvar lower)
 (defvar upper)
 
+(defvar happyNums)
+(setq happyNums (make-hash-table))
+
+(defvar normList)
+(setq normList nil)
+
 (princ "First Argument: ")
 (terpri)
-(setf lower (read))
+(setq lower (read))
 
 (princ "Second Argument: ")
 (terpri)
-(setf upper (read))
+(setq upper (read))
 
 (if (> lower upper)
     (rotatef lower upper)
 )
 
-(princ "Lower bound: ")
-(princ lower)
 (terpri)
+(setf happyNums (findHappy happyNums lower upper normList))
+(sort normList #'>)
 
-(princ "Upper bound: ")
-(princ upper)
+(printResults normList happyNums)
 (terpri)
-
-(if (isHappy upper)
-    (progn
-        (princ "Upper bound is a happy number.")
-        (terpri)
-        (princ "Norm: ")
-        (princ (findNorm upper))
-        (terpri)
-    )
-)
