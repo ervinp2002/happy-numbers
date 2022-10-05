@@ -44,6 +44,7 @@
 
     (let ((n number) (total (square number)) (addend 1))
         (loop 
+            ; Same approach as C implementation. 
             (when (= 1 n) (return (sqrt total)))   
             (setq addend (digitSum n))
             (setq total (+ total (square addend)))
@@ -58,39 +59,50 @@
     
     (let ((norm 1) (i lower) (index 0))
         (loop
+            ; Variable "i" keeps track of what number within range is being iterated through.
             (when (> i upper) (return happyNums))
             (if (isHappy i)
                 (progn
                     (setq norm (findNorm i))
-                    (setf (gethash norm happyNums) i)
+                    (setf (gethash norm happyNums) i) ; Add to Hash Table. 
 
                     (if (> index 9)
                         (progn
-                            (sort normList #'>)
+                            (sort normList #'>) ; Sort in descending order.
+
+                            ; Just like C, push out the minimum value after sorting.
                             (if (> norm (aref normList 9))
                                 (setf (aref normList 9) norm)
                             )
                         )
-                    (setf (aref normList index) norm))
-                    (setq index (+ 1 index))
+                    (setf (aref normList index) norm)) ; Else-clause when the array isn't completely filled up yet. 
+                    (setq index (+ 1 index)) ; Increment each time there is a happy number. 
                 )
             ) 
-            (setq i (+ 1 i))  
+            (setq i (+ 1 i))
+            (sort normList #'>) ; One last sort to have all norms in the right index in array. 
         )
     )
 )
 
-
 (defun printResults (normList table)
-    (let ((size (length normList)) (counter 0))
+    "PRE: Hash table of pairs and array of norms are passed in.
+     POST: Outputs the happy numbers with the highest norms."
+
+    (let ((size (hash-table-count table)))
+        ; Handles cases where there are more than 10 happy numbers within range by resetting to 10.
         (if (>= size 10)
             (setq size 10)
         )
 
-        (do ((counter 0) (+ counter 1))
-            ((= counter size))
-            (princ (gethash 'index table))
+        (dotimes (n size)
+            (princ (gethash (aref normList n) table))
             (terpri)
+        )
+
+        ; Handles cases where there are no happy numbers in range.
+        (if (= size 0)
+            (princ "NOBODY'S HAPPY :(")
         )
     )
 )
@@ -121,6 +133,5 @@
 
 (terpri)
 (setf happyNums (findHappy happyNums lower upper normList))
-
 (printResults normList happyNums)
 (terpri)
