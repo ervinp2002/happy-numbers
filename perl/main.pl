@@ -65,21 +65,25 @@ sub printResults {
     # PRE: Hash that is passed in is already filled.
     # POST: Outputs the happy numbers with the highest norms. 
 
+    # Checks the length of the hash table.
     my $length = keys $_[0] >= 10 ? 10 : keys $_[0];
     my $index = 0;
 
-    # Referred to official Perl documentation for using overloaded sort.  
+    # Referred to official Perl documentation for sort in descending order.  
     my @list = sort {$b <=> $a} keys $_[0];
     if ($length == 0) {
         print("NOBODY'S HAPPY :(\n");
     } else {
         for ($index = 0; $index < $length; $index++) {
-            print("$_[0]{$list[$index]}\n");
+            # Call a hash table value using an element from the list as the key.
+            print("$_[0]{$list[$index]}\n"); 
         }
     }  
 }
 
 # Main
+# POST: Outputs the 10 happy numbers with the highest norms. 
+
 my %happynums;
 my $norm;
 

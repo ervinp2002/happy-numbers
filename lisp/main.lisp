@@ -96,6 +96,7 @@
         )
 
         (dotimes (n size)
+            ; Call a hash table value using an array element as the key. 
             (princ (gethash (aref normList n) table))
             (terpri)
         )
@@ -110,12 +111,15 @@
 ; Main Program, referenced sample code from Lisp email. 
 ; POST: Outputs the 10 happy numbers with the highest norms. 
 
+; Contains upper and lower bounds of the input range. 
 (defvar lower)
 (defvar upper)
 
+; Hash Table to contain happy number and norm pairs.
 (defvar happyNums)
 (setq happyNums (make-hash-table))
 
+; List containing norms to be sorted. 
 (defvar normList)
 (setq normList (make-array '(10)))
 
@@ -128,6 +132,7 @@
 (setq upper (read))
 
 (if (> lower upper)
+    ; Swap s-expresion
     (rotatef lower upper)
 )
 

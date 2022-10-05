@@ -102,6 +102,7 @@ public class HappyNumbers {
             if (size == 0) {
                 Console.WriteLine("NOBODY'S HAPPY :(");
             } else {
+                // Sorted List sorts in ascending order so list must be reversed. 
                 List<double> keys = happy.Keys.ToList();
                 keys.Reverse();
 

@@ -129,6 +129,9 @@ func main() {
  	for key := range happyNums {
 		norms = append(norms, key)
 	}
+
+	/* Call sort package which has a sort interface that contains the Reverse function
+	   that sorts a slice of Float64 values. */
 	sort.Sort(sort.Reverse(sort.Float64Slice(norms)))
 
 	printResults(happyNums, norms)

@@ -177,7 +177,7 @@ program main
     end do
 
     ! Initialize empty indices to 0. 
-    save_count = counter
+    save_count = counter ! Holds the last index with a non-zero element. 
     if (counter < 10) then
         do counter = counter, 10
             values(counter) = 0
@@ -186,6 +186,8 @@ program main
     end if
 
     call bubble_sort(values, norms)
+
+    ! Convert happy numbers into strings.
     do counter = 1, 10 
         if (norms(counter) /= 0) then
             write(str, "(i20)") values(counter)
