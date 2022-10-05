@@ -53,17 +53,26 @@
 )
 
 (defun findHappy (happyNums lower upper normList)
-    "PRE: Hashtable for happy numbers, upper & lower bounds are passed in.
+    "PRE: Hashtable and array for happy numbers, upper & lower bounds are passed in.
      POST: Adds happy numbers and their norms to the hash table."
     
-    (let ((norm 1) (i lower))
+    (let ((norm 1) (i lower) (index 0))
         (loop
             (when (> i upper) (return happyNums))
             (if (isHappy i)
                 (progn
                     (setq norm (findNorm i))
                     (setf (gethash norm happyNums) i)
-                    (setq normList (push 'i normList))
+
+                    (if (> index 9)
+                        (progn
+                            (sort normList #'>)
+                            (if (> norm (aref normList 9))
+                                (setf (aref normList 9) norm)
+                            )
+                        )
+                    (setf (aref normList index) norm))
+                    (setq index (+ 1 index))
                 )
             ) 
             (setq i (+ 1 i))  
@@ -78,11 +87,10 @@
             (setq size 10)
         )
 
-        (dolist (index normList)
-            (when (= counter size) (return))
+        (do ((counter 0) (+ counter 1))
+            ((= counter size))
             (princ (gethash 'index table))
             (terpri)
-            (setq counter (+ counter 1))
         )
     )
 )
@@ -97,7 +105,7 @@
 (setq happyNums (make-hash-table))
 
 (defvar normList)
-(setq normList nil)
+(setq normList (make-array '(10)))
 
 (princ "First Argument: ")
 (terpri)
@@ -113,7 +121,6 @@
 
 (terpri)
 (setf happyNums (findHappy happyNums lower upper normList))
-(sort normList #'>)
 
 (printResults normList happyNums)
 (terpri)
