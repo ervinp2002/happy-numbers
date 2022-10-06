@@ -89,7 +89,6 @@ All implementations can be compiled and executed as shown below:
 
 **File must have execute permission turned on.**
 
-    chmod u+x main.pl
+    chmod u+x main.lisp
     ./main.lisp
-
 
