@@ -72,7 +72,10 @@
 
                             ; Just like C, push out the minimum value after sorting.
                             (if (> norm (aref normList 9))
-                                (setf (aref normList 9) norm)
+                                (progn
+                                    (remhash (aref normList 9) happyNums)
+                                    (setf (aref normList 9) norm)
+                                )  
                             )
                         )
                     (setf (aref normList index) norm)) ; Else-clause when the array isn't completely filled up yet. 
